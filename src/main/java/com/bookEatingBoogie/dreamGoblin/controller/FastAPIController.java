@@ -7,7 +7,10 @@ import com.bookEatingBoogie.dreamGoblin.service.StoryGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -21,7 +24,7 @@ public class FastAPIController {
     private StoryGenerationService storyGenerationService;
 
     //캐릭터 생성 관련 컨트롤러
-    @PostMapping("/character")
+    @PostMapping("/no")
     public ResponseEntity<String> requestCharacter(@RequestBody(required = false) GptPromptDTO gptPrompt) {
 
         String userRequest = "The child has come to create a main character! Welcome the child and ask the first question about the character's name to start the story creation.";
@@ -36,7 +39,7 @@ public class FastAPIController {
 
         try {
             //characterGenerationService 호출. = 캐릭터 생성 서비스 호출.
-            String response = characterGenerationService.generateCharacter(gptPrompt);
+            String response = characterGenerationService.generateCharacter("abc");
 
             return ResponseEntity.ok(response);
 

@@ -3,7 +3,7 @@ package com.bookEatingBoogie.dreamGoblin.DTO;
 import lombok.Data;
 
 @Data
-public class CharacterInfoDTO {
+public class CharacterRequestDTO {
     private String charName;
-    private String charNote;
+    private String userImg;
 }
