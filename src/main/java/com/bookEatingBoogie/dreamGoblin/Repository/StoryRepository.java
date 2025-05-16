@@ -1,0 +1,28 @@
+package com.bookEatingBoogie.dreamGoblin.Repository;
+
+import com.bookEatingBoogie.dreamGoblin.model.Story;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+public interface StoryRepository extends JpaRepository<Story, String> {
+
+    Optional<Story> findByStoryId(String storyId);
+
+//        AND s.title           IS NOT NULL
+//        AND s.coverImg        IS NOT NULL
+    @Query("""
+    SELECT DISTINCT s
+      FROM Story s
+      JOIN FETCH s.creation c
+      JOIN FETCH c.characters ch
+      JOIN FETCH ch.user u
+     WHERE u.userId = :userId
+        AND s.content         IS NOT NULL
+    """)
+    List<Story> findAllByUserIdWithCharacters(@Param("userId") String userId);
+}
