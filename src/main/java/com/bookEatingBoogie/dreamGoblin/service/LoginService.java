@@ -12,18 +12,18 @@ public class LoginService {
 
     @Autowired
     private UserRepository userRepository;
-
+    //회원가입
     public String signup(User user) {
-        if (userRepository.findByUserId(user.getUserId()).isPresent()) {
+        if (userRepository.findById(user.getUserId()).isPresent()) {
             return "Failed";
         } else {
             userRepository.save(user);
             return "Success";
         }
     }
-
+    //로그인
     public String login(User user) {
-        Optional<User> request = userRepository.findByUserId(user.getUserId());
+        Optional<User> request = userRepository.findById(user.getUserId());
         if (request.get().getPassword().equals(user.getPassword())) {
             return "Success";
         }

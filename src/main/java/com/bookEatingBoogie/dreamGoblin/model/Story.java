@@ -6,8 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -19,17 +23,18 @@ public class Story {
 
     @Id
     @Column(name = "storyID", columnDefinition = "VARCHAR(36)")
-    private String storyId = UUID.randomUUID().toString();
+    private String storyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creationID", nullable = false)
     private Creation creation;
 
-    @Column(name = "title", nullable = false, length = 100)
+    @Column(name = "title", length = 100)
     private String title;
 
-    @Column(name = "creationDate", nullable = false)
-    private LocalDateTime creationDate = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "creationDate", nullable = false, updatable = false)
+    private LocalDateTime creationDate;
 
     @Column(name = "favorite")
     private boolean favorite = false;
@@ -44,4 +49,13 @@ public class Story {
     private String content;
 
 
+    @PrePersist
+    public void generateId() {
+        if (this.storyId == null) {
+            String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            // 길이를 4로 지정해 4글자 ID 생성
+            String randPart = NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, NanoIdUtils.DEFAULT_ALPHABET, 4).toUpperCase();
+            this.storyId = datePart + randPart;
+        }
+    }
 }

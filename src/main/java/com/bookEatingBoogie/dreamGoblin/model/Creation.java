@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import java.util.List;
 
 @Getter
@@ -23,7 +22,7 @@ public class Creation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "charID", nullable = false)
-    private Character character;
+    private Characters characters;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre", referencedColumnName = "style")
@@ -33,6 +32,6 @@ public class Creation {
     @JoinColumn(name = "place", referencedColumnName = "style")
     private Style place;
 
-    @OneToMany(mappedBy = "creation", cascade = CascadeType.ALL)
-    private List<Story> story;
+    @OneToOne(mappedBy = "creation", cascade = CascadeType.ALL)
+    private Story story;
 }

@@ -30,5 +30,5 @@ public class User {
     private String phoneNum;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Character> character;
+    private List<Characters> characters;
 }

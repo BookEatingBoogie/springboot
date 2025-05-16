@@ -16,10 +16,13 @@ public class CharacterGenerationController {
     private CharacterGenerationService characterGenerationService;
 
     @PostMapping("/character")
-    public ResponseEntity<String> requestCharacter(@RequestBody CharacterRequestDTO request) {
+    public ResponseEntity<String> requestCharacter(@RequestBody CharacterRequestDTO character) {
+
+        if (character == null) { return ResponseEntity.badRequest().build();}
+
         try {
-            // 캐릭터 이미지 생성 및 저장 경로 요청.
-            String charImg = characterGenerationService.generateCharacter(request.getUserImg());
+            // 캐릭터 이미지 생성 및 저장.
+            String charImg = characterGenerationService.generateSaveCharacter(character);
             // 이미지 저장 경로 반환(s3)
             return ResponseEntity.ok(charImg);
         } catch (RuntimeException e) {
@@ -29,4 +32,6 @@ public class CharacterGenerationController {
                     .body("캐릭터 생성 실패: "+e.getMessage());
         }
     }
+
+
 }
