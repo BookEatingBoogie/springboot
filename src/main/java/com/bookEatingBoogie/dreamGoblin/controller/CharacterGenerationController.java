@@ -1,6 +1,7 @@
 package com.bookEatingBoogie.dreamGoblin.controller;
 
 import com.bookEatingBoogie.dreamGoblin.DTO.CharacterRequestDTO;
+import com.bookEatingBoogie.dreamGoblin.DTO.CharacterReturnDTO;
 import com.bookEatingBoogie.dreamGoblin.service.CharacterGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,15 @@ public class CharacterGenerationController {
     private CharacterGenerationService characterGenerationService;
 
     @PostMapping("/character")
-    public ResponseEntity<String> requestCharacter(@RequestBody CharacterRequestDTO character) {
+    public ResponseEntity<?> requestCharacter(@RequestBody CharacterRequestDTO character) {
 
         if (character == null) { return ResponseEntity.badRequest().build();}
 
         try {
             // 캐릭터 이미지 생성 및 저장.
-            String charImg = characterGenerationService.generateSaveCharacter(character);
+            CharacterReturnDTO returnDTO = characterGenerationService.generateSaveCharacter(character);
             // 이미지 저장 경로 반환(s3)
-            return ResponseEntity.ok(charImg);
+            return ResponseEntity.ok(returnDTO);
         } catch (RuntimeException e) {
             //응답 실패 시 예외처리.
             e.printStackTrace();

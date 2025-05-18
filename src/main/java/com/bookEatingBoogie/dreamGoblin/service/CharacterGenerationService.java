@@ -1,6 +1,7 @@
 package com.bookEatingBoogie.dreamGoblin.service;
 
 import com.bookEatingBoogie.dreamGoblin.DTO.CharacterRequestDTO;
+import com.bookEatingBoogie.dreamGoblin.DTO.CharacterOutputDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.CharacterReturnDTO;
 import com.bookEatingBoogie.dreamGoblin.Repository.CharacterRepository;
 import com.bookEatingBoogie.dreamGoblin.Repository.UserRepository;
@@ -33,7 +34,7 @@ public class CharacterGenerationService {
 
     //캐릭터 이미지를 생성 후 db에 이미지 경로를 저장하기 위한 함수
     @Transactional
-    public String generateSaveCharacter(CharacterRequestDTO request) {
+    public CharacterReturnDTO generateSaveCharacter(CharacterRequestDTO request) {
 
         User user = userRepository.findById("user")
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
@@ -46,19 +47,24 @@ public class CharacterGenerationService {
         }
         characters.setCharName(request.getCharName());
 
-        CharacterReturnDTO response = generateCharacter(request.getUserImg());
+        CharacterOutputDTO response = generateCharacter(request.getUserImg());
         // model에 charImg 경로 연결.
         characters.setCharImg(response.getS3_url());
         characters.setCharLook(response.getCharLook());
         System.out.println(characters.getCharName()+"/"+characters.getCharLook()+"/"+characters.getCharImg());
         //캐릭터 db 저장.
         saveCharacter(characters);
+
+        CharacterReturnDTO returnDTO = new CharacterReturnDTO();
+        returnDTO.setCharImg(response.getS3_url());
+        returnDTO.setCharId(characters.getCharId());
+
         // s3 경로 반환.
-        return response.getS3_url();
+        return returnDTO;
     }
 
     // 캐릭터 이미지 생성 함수
-    private CharacterReturnDTO generateCharacter(String userImg) {
+    private CharacterOutputDTO generateCharacter(String userImg) {
 
         System.out.println("▶ send to FastAPI imgUrl = " + userImg);
 
@@ -76,8 +82,8 @@ public class CharacterGenerationService {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<CharacterReturnDTO> response = restTemplate.postForEntity(
-                    fastAPIUrl, request, CharacterReturnDTO.class
+            ResponseEntity<CharacterOutputDTO> response = restTemplate.postForEntity(
+                    fastAPIUrl, request, CharacterOutputDTO.class
             );
 
             // fastAPI 호출이 됐지만, 응답이 비정상적으로 반환된 경우 예외 발생.
