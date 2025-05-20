@@ -2,13 +2,11 @@ package com.bookEatingBoogie.dreamGoblin.controller;
 
 import com.bookEatingBoogie.dreamGoblin.DTO.CharacterDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.StorageDTO;
+import com.bookEatingBoogie.dreamGoblin.DTO.StoryDTO;
 import com.bookEatingBoogie.dreamGoblin.service.LoadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,9 +29,8 @@ public class LoadingController {
         return loadingService.loadCharacters("user");
     }
 
-    @GetMapping("/story/delete")
-    public String deleteStory() {
-        return loadingService.deleteStoryById(storyId, userId);
-        return ResponseEntity.ok("스토리가 삭제되었습니다.");
+    @PostMapping("/story/delete")
+    public StorageDTO deleteSelected(@RequestBody DeleteDTO delete) {
+        return loadingService.deleteStory(delete.getStoryId(), "user");
     }
 }

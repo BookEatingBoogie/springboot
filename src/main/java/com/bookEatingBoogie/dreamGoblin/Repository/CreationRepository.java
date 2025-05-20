@@ -11,4 +11,6 @@ public interface CreationRepository extends JpaRepository<Creation, Integer> {
     Optional<Creation> findByCreationId(int creationId);
 
     Optional<Creation> findByCreationIdAndCharacters(int creationId, Characters characters);
+
+    boolean existsByCharacters(Characters characters);
 }
