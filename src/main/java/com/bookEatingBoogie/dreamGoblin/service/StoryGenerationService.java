@@ -34,6 +34,7 @@ public class StoryGenerationService {
     private StyleRepository styleRepository;
 
     private final List<String> storyList = new ArrayList<>();
+    private String requestId;
 
 
     //동화 도입부 생성 및 db에 장르, 배경을 저장하기 위한 함수
@@ -54,9 +55,6 @@ public class StoryGenerationService {
         creation.setGenre(genre);
         creation.setPlace(place);
 
-        //creation db에 캐릭터 id,장르, 배경 저장.
-        int creationId = saveCreation(creation);
-
         //fast api로 전송할 값 dto에 넣기
         IntroInfoDTO storyInfo = new IntroInfoDTO();
         storyInfo.setCharName(characters.getCharName());
@@ -69,6 +67,9 @@ public class StoryGenerationService {
         IntroOutputDTO response = generateIntro(storyInfo);
         System.out.println(response);
 
+        //creation db에 캐릭터 id,장르, 배경 저장.
+        int creationId = saveCreation(creation);
+
         //동화 내용 저장.
         storyList.add(response.getIntro());
 
@@ -80,10 +81,13 @@ public class StoryGenerationService {
         returnDTO.setChoices(response.getOptions());
         returnDTO.setImgUrl(response.getS3_url());
 
+        requestId = response.getRequestId();
+        System.out.println(requestId);
+
         return returnDTO;
     }
     // 엔딩 생성 및 전체 스토리 정제.
-    public String generateSaveStory(String choice, int charId, String userId, int creationId) {
+    public String generateSaveStory(String choice, int charId, String userId, int creationId, int page) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         Characters characters = characterRepository.findByCharIdAndUser(charId,user)
@@ -95,7 +99,7 @@ public class StoryGenerationService {
         story.setCreation(creation);
         storyRepository.save(story);
 
-        String response = generateStory(choice, story.getStoryId(), characters);
+        String response = generateStory(choice, story.getStoryId(), page, characters);
         storyList.clear();
 
         story.setContent(response);
@@ -141,7 +145,7 @@ public class StoryGenerationService {
     }
 
     //엔딩 생성 및 동화 정제 함수
-    private String generateStory(String choice, String storyId, Characters characters) {
+    private String generateStory(String choice, String storyId, int page, Characters characters) {
         //endpoint 경로 설정.
         String fastAPIUrl = baseUrl + "/generate/story/";
 
@@ -149,6 +153,8 @@ public class StoryGenerationService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String,Object> storyInfo = Map.of(
+                "requestId", requestId,
+                "page", page,
                 "storyId", storyId,
                 "charName", characters.getCharName(),
                 "choice", choice,
@@ -198,7 +204,9 @@ public class StoryGenerationService {
         fastAPI-generateContent 호출.
         스토리 생성을 위한 장르, 배경, 캐릭터이름 전달, 생성된 동화 내용 반환.
          */
+        System.out.println(requestId);
         Map<String,Object> storyInfo = Map.of(
+                "requestId", requestId,
                 "charName", characters.getCharName(),
                 "choice", choice,
                 "page", page,
@@ -221,6 +229,11 @@ public class StoryGenerationService {
 
             storyList.add(response.getBody().getStory());
             System.out.println(response.getBody());
+            requestId = response.getBody().getRequestId();
+            System.out.println(requestId);
+
+            System.out.println("호출 완료.");
+
             return response.getBody();
 
         } catch (RestClientException e) {

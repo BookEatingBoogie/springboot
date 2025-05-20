@@ -12,4 +12,5 @@ public class IntroOutputDTO {
     private List<String> options;
     private String charLook;
     private String s3_url;
+    private String requestId;
 }

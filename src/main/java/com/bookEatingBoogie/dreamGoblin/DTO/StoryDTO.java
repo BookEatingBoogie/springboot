@@ -16,6 +16,8 @@ public class StoryDTO {
     private String summary;
     private String coverImg;
     private String content;
+    //캐릭터 id 같이 반환.
+    private int charId;
 
     public StoryDTO(Story s) {
         this.storyId      = s.getStoryId();
@@ -26,5 +28,7 @@ public class StoryDTO {
         this.summary      = s.getSummary();
         this.coverImg     = s.getCoverImg();
         this.content      = s.getContent();
+        // 캐릭터 ID 추출 (Story → Creation → Character)
+        this.charId = s.getCreation().getCharacters().getCharId();
     }
 }

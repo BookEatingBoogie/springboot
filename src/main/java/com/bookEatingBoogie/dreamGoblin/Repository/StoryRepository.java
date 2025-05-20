@@ -25,4 +25,12 @@ public interface StoryRepository extends JpaRepository<Story, String> {
         AND s.content         IS NOT NULL
     """)
     List<Story> findAllByUserIdWithCharacters(@Param("userId") String userId);
+
+    @Query("""
+    SELECT s FROM Story s
+    WHERE s.creation.characters.user.userId = :userId
+    ORDER BY s.storyId DESC
+    LIMIT 1
+    """)
+    Optional<Story> findLatestStoryByUserId(@Param("userId") String userId);
 }

@@ -4,6 +4,7 @@ import com.bookEatingBoogie.dreamGoblin.DTO.CharacterDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.StorageDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.StoryDTO;
 import com.bookEatingBoogie.dreamGoblin.Repository.CharacterRepository;
+import com.bookEatingBoogie.dreamGoblin.Repository.CreationRepository;
 import com.bookEatingBoogie.dreamGoblin.Repository.StoryRepository;
 import com.bookEatingBoogie.dreamGoblin.Repository.UserRepository;
 import com.bookEatingBoogie.dreamGoblin.model.Characters;
@@ -24,6 +25,8 @@ public class LoadingService {
     private CharacterRepository characterRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CreationRepository creationRepository;
 
     public StorageDTO loadStorage(String userId) {
 
@@ -36,6 +39,8 @@ public class LoadingService {
                 .stream()
                 .map(StoryDTO::new)
                 .toList();
+
+        //List<CreationDTO> creations = creationRepository.findByCreationId(stories.getCreationId());
 
         List<CharacterDTO> chars = characterRepository.findByUser(user)
                 .stream()
@@ -55,5 +60,20 @@ public class LoadingService {
                 .stream()
                 .map(CharacterDTO::new)
                 .toList();
+    }
+
+    public List<StoryDTO> deleteStory(String storyId, String userId) {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new IllegalArgumentException("스토리를 찾을 수 없습니다."));
+
+        // 사용자 확인 (보안)
+        String ownerId = story.getCreation().getCharacters().getUser().getUserId();
+        if (!ownerId.equals(userId)) {
+            throw new SecurityException("본인의 스토리만 삭제할 수 있습니다.");
+        }
+
+        storyRepository.delete(story);
+        if story.getCreation().
+        return loadStorage("user").getStories();
     }
 }

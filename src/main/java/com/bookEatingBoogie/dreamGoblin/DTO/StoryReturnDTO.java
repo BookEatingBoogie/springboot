@@ -11,4 +11,5 @@ public class StoryReturnDTO {
     private String question;
     private List<String> choices;
     private String s3_url;
+    private String requestId;
 }
