@@ -1,6 +1,7 @@
 package com.bookEatingBoogie.dreamGoblin.controller;
 
 import com.bookEatingBoogie.dreamGoblin.DTO.CharacterDTO;
+import com.bookEatingBoogie.dreamGoblin.DTO.DeleteDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.StorageDTO;
 import com.bookEatingBoogie.dreamGoblin.DTO.StoryDTO;
 import com.bookEatingBoogie.dreamGoblin.service.LoadingService;

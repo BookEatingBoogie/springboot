@@ -11,11 +11,13 @@ import com.bookEatingBoogie.dreamGoblin.model.Characters;
 import com.bookEatingBoogie.dreamGoblin.model.Creation;
 import com.bookEatingBoogie.dreamGoblin.model.Story;
 import com.bookEatingBoogie.dreamGoblin.model.User;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -66,31 +68,22 @@ public class LoadingService {
 
     @Transactional
     public StorageDTO deleteStory(String storyId, String userId) {
-        System.out.println(storyId);
-        Story story = storyRepository.findByStoryIdWithAllRelations(storyId)
+        System.out.println("삭제 요청된 storyId: " + storyId);
+
+        Story target = storyRepository.findByStoryIdWithAllRelations(storyId)
                 .orElseThrow(() -> new IllegalArgumentException("스토리를 찾을 수 없습니다."));
 
-        // 사용자 확인 (보안)
-        String ownerId = story.getCreation().getCharacters().getUser().getUserId();
+        String ownerId = target.getCreation().getCharacters().getUser().getUserId();
         if (!ownerId.equals(userId)) {
-            throw new SecurityException("본인의 스토리만 삭제할 수 있습니다.");
+            throw new SecurityException("본인의 스토리만 삭제할 수 없습니다.");
         }
 
-        // 연관 객체들
-        Creation creation = story.getCreation();
-        Characters character = creation.getCharacters();
+        // 관계만 끊어줌 (불필요할 경우 생략 가능)
+        target.getCreation().setStory(null);
 
-        storyRepository.deleteByStoryId(storyId);
-
-        // 2. 연결된 Creation에 다른 스토리가 없으면 삭제
-        if (!storyRepository.existsByCreation(creation)) {
-            creationRepository.delete(creation);
-        }
-        // 3. 연결된 캐릭터에 다른 Creation이 없으면 캐릭터 삭제
-        if (!creationRepository.existsByCharacters(character)) {
-            characterRepository.delete(character);
-        }
+        storyRepository.delete(target);
 
         return loadStorage(userId);
     }
+
 }
