@@ -1,9 +1,7 @@
 package com.bookEatingBoogie.dreamGoblin.controller;
 
-import com.bookEatingBoogie.dreamGoblin.DTO.IntroReturnDTO;
-import com.bookEatingBoogie.dreamGoblin.DTO.IntroRequestDTO;
-import com.bookEatingBoogie.dreamGoblin.DTO.StoryRequestDTO;
-import com.bookEatingBoogie.dreamGoblin.DTO.StoryReturnDTO;
+import com.bookEatingBoogie.dreamGoblin.DTO.*;
+import com.bookEatingBoogie.dreamGoblin.service.CoverService;
 import com.bookEatingBoogie.dreamGoblin.service.StoryGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -81,4 +79,20 @@ public class StoryGenerationController {
 
         return null;
     }
+
+    @Autowired
+    private CoverService coverService;
+
+    @PostMapping("/story/cover")
+    public ResponseEntity<?> updateStoryCover(@RequestBody CoverRequestDTO coverRequest) {
+        try {
+            coverService.saveCoverInfo("user", coverRequest.getTitle(), coverRequest.getCoverImg());
+            return ResponseEntity.ok("표지 저장 완료");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("표지 저장 실패: " + e.getMessage());
+        }
+    }
+
+
 }

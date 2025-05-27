@@ -246,4 +246,5 @@ public class StoryGenerationService {
         creationRepository.save(creation);
         return creation.getCreationId();
     }
+
 }
