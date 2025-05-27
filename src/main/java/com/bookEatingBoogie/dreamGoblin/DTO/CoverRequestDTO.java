@@ -6,4 +6,5 @@ import lombok.Data;
 public class CoverRequestDTO {
     private String title;
     private String coverImg;
+    private int creationId;
 }

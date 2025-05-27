@@ -86,13 +86,14 @@ public class StoryGenerationController {
     @PostMapping("/story/cover")
     public ResponseEntity<?> updateStoryCover(@RequestBody CoverRequestDTO coverRequest) {
         try {
-            coverService.saveCoverInfo("user", coverRequest.getTitle(), coverRequest.getCoverImg());
+            coverService.saveCoverInfo("user", coverRequest.getTitle(), coverRequest.getCoverImg(), coverRequest.getCreationId());
             return ResponseEntity.ok("표지 저장 완료");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("표지 저장 실패: " + e.getMessage());
         }
     }
+
 
 
 }

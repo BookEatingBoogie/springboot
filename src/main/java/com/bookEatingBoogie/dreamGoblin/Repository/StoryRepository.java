@@ -58,6 +58,9 @@ public interface StoryRepository extends JpaRepository<Story, String> {
     Optional<Story> findLatestStoryWithoutCover(@Param("userId") String userId);
 
 
+    Optional<Story> findByUserIdAndCreationId(String userId, int creationId);
+
+
     boolean existsByCreation(Creation creation);
 
     @Modifying
