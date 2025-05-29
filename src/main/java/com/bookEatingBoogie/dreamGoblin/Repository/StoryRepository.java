@@ -16,7 +16,7 @@ public interface StoryRepository extends JpaRepository<Story, String> {
 
     Optional<Story> findByStoryId(String storyId);
 
-//        AND s.title           IS NOT NULL
+    //        AND s.title           IS NOT NULL
 //        AND s.coverImg        IS NOT NULL
     @Query("""
     SELECT DISTINCT s
@@ -49,7 +49,6 @@ public interface StoryRepository extends JpaRepository<Story, String> {
     @Query("""
     SELECT s FROM Story s
     WHERE s.creation.characters.user.userId = :userId
-      AND s.content IS NOT NULL
       AND s.title IS NULL
       AND s.coverImg IS NULL
     ORDER BY s.creationDate DESC
@@ -58,8 +57,15 @@ public interface StoryRepository extends JpaRepository<Story, String> {
     Optional<Story> findLatestStoryWithoutCover(@Param("userId") String userId);
 
 
-    Optional<Story> findByUserIdAndCreationId(String userId, int creationId);
-
+    @Query("""
+    SELECT s FROM Story s
+    JOIN s.creation c
+    JOIN c.characters ch
+    JOIN ch.user u
+    WHERE u.userId = :userId AND c.creationId = :creationId
+""")
+    Optional<Story> findByUserIdAndCreationId(@Param("userId") String userId,
+                                              @Param("creationId") int creationId);
 
     boolean existsByCreation(Creation creation);
 
